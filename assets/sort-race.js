@@ -2,10 +2,9 @@
 CPSC 335-05 Project 3 Sort Race
 Team: LYL Brian Chung (889201612), Blue Bayani (889517108) - Project 2
 Contact: bchung4@csu.fullerton.edu, kbayani@csu.fullerton.edu
-Last Modified: 
+Last Modified: 12/14
 ------------------------------------------------------------------------*/
 
-//For Blue:
 //For all the get__SortAnimations, given an unsorted array, the function will console.log the sorted array and return a list called steps
 //The steps list is what our race manager will use to print the arrays. For our problem we will need to change the implementation for the animation.push values
 //For instance, we may want to push the following animation[step, index, swap]
@@ -20,31 +19,49 @@ Last Modified:
 
 //Since we're not using Node we're limited to just this javascript file and the drawing functions of P5
 
-var MergeSortSteps = []
-var QuickSortSteps = []
-var SelectionSortSteps = []
+var MergeSortSteps = [];
+var QuickSortSteps = [];
+var SelectionSortSteps = [];
 var hexUsed = true;
-var GivenArray = [0, 'b', 'a', 3, 2, 8, 4, 7, 6, 5, 1, 9]
-var passedArray = GivenArray.slice()
-
-//Convert all values into ints to put into sorting algo
-if(hexUsed){
+var GivenArray = [0, 'b', 'a', 3, 2, 8, 4, 7, 6, 5, 1, 9];
+//test arrays
+//'a', 4, 0, 'b', 5, 8, 6, 1, 7, 9, 2, 3
+//0, 'b', 'a', 3, 2, 8, 4, 7, 6, 5, 1, 9
+//4, 0, 'b', 0, 6, 5, 6, 6, 7, 1, 0, 'a'
+var passedArray = GivenArray.slice();
+var m_a = [];
+var q_a = [];
+var s_a = [];
+var count = 0;
+//Convert all values into ints to put into sorting algorithm
+if(hexUsed) {
   for(let i = 0; i < passedArray.length; i++){
     passedArray[i] = parseInt(passedArray[i], 16);
   }
 }
 
-console.log(passedArray);
-
-
-//Race Manager
-function raceManager(){
+//initializes variables used by race_manager
+//O(1)
+function init_display(){
   MergeSortSteps = getMergeSortSteps(passedArray.slice());
   QuickSortSteps = getQuickSortSteps(passedArray.slice());
   SelectionSortSteps = getSelectionSortSteps(passedArray.slice());
+  m_a = drawMergeSortSteps();
+  q_a = drawQuickSortSteps();
+  s_a = drawSelectionSortSteps();
+}
+
+//changes the color of an array element at a certain index.
+//O(1)
+function color_change(arr,i1,i2,col) {
+  var temp_arr = arr.slice()
+  temp_arr[i1] = temp_arr[i1].toString().fontcolor(col)
+  temp_arr[i2] = temp_arr[i2].toString().fontcolor(col)
+  return temp_arr
 }
 
 //MergeSort GUI
+//O(N)
 function drawMergeSortSteps(){
   mergeSortArray = GivenArray.slice();
   for(let i=0;i<MergeSortSteps.length;i++){
@@ -53,11 +70,11 @@ function drawMergeSortSteps(){
       const idx1 = MergeSortSteps[i][0];
       const idx2 = MergeSortSteps[i][1];
       if(idx1 === idx2){
-        //Pivot value?
+        m_a.push([color_change(mergeSortArray,idx1,idx2,"deepskyblue")])
       }
-      else{
-      //pass but make 
-      }
+      // else{
+
+      // }
     }
     else{
       const idx = MergeSortSteps[i][0];
@@ -74,31 +91,35 @@ function drawMergeSortSteps(){
       else{
         mergeSortArray[idx] = idxHeight;
       }
+      m_a.push([color_change(mergeSortArray,idx,idxHeight,"red")])
     }
-    console.log(mergeSortArray)
   }
+  return m_a
 }
 
 //QuickSort GUI
+//O(N)
 function drawQuickSortSteps(){
   quickSortArray = GivenArray.slice();
   for(let i=0;i<QuickSortSteps.length;i++){
-    const isComparison = QuickSortSteps[i][2];
-    if(isComparison){
-      const idx1 = QuickSortSteps[i][0];
-      const idx2 = QuickSortSteps[i][1];
-      //
-    }
-    else{
-      const idx1 = QuickSortSteps[i][0];
-      const idx2 = QuickSortSteps[i][1];
-      swap(quickSortArray, idx1, idx2)
-    }
-    console.log(quickSortArray)
+  const isComparison = QuickSortSteps[i][2];
+  if(isComparison){
+    const idx1 = QuickSortSteps[i][0];
+    const idx2 = QuickSortSteps[i][1];
+    q_a.push([color_change(quickSortArray,idx1,idx2,"deepskyblue")])
   }
+  else{
+    const idx1 = QuickSortSteps[i][0];
+    const idx2 = QuickSortSteps[i][1];
+    swap(quickSortArray, idx1, idx2)
+    q_a.push([color_change(quickSortArray,idx1,idx2,"red")])
+  }
+  }
+  return q_a
 }
 
 //Selection Sort GUI
+//O(N)
 function drawSelectionSortSteps(){
   selectionSortArray = GivenArray.slice();
   for(let i=0;i<SelectionSortSteps.length;i++){
@@ -106,18 +127,17 @@ function drawSelectionSortSteps(){
     if(isComparison){
       const idx1 = SelectionSortSteps[i][0];
       const idx2 = SelectionSortSteps[i][1];
-      //pass but make 
+      s_a.push([color_change(selectionSortArray,idx1,idx2,"deepskyblue")])
     }
     else{
       const idx1 = SelectionSortSteps[i][0];
       const idx2 = SelectionSortSteps[i][1];
       swap(selectionSortArray, idx1, idx2)
-    }
-    console.log(selectionSortArray)
+      s_a.push([color_change(selectionSortArray,idx1,idx2,"red")])
+    }    
   }
+  return s_a;
 }
-
-
 
 //Sorting Algorithms
 //Merge Sort
@@ -233,7 +253,54 @@ function swap(array, firstIndex, secondIndex){
   array[secondIndex] = tempValue;
 }
 
-raceManager();
-//drawQuickSortSteps();
-drawSelectionSortSteps();
-//drawMergeSortSteps();
+
+
+init_display();
+
+
+//displays sort step by step
+//O(1)
+function race_manager() {
+  //on the first pass the function writes out the following information
+  if(count == 0) {
+    document.write("<h1>CPSC-335-05 Project 3: Sort-Race</h1><br></br><h3>LYL: Brian Chung (889201612), Blue Bayani (889517108)</h3>")
+    document.write("<br></br>Blue = comparison, Red = swap<br></br>")
+    document.write("<br></br><br></br>&emsp;MERGE SORT&emsp;&emsp;&emsp;&emsp;&emsp;QUICK SORT&emsp;&emsp;&emsp;SELECTION SORT<br></br>")
+    document.body.style.backgroundColor = "beige";
+  }
+  //if count is greater than the longest array, stop calling function
+  if(count > Math.max(m_a.length,q_a.length,s_a.length) - 1) {
+    clearInterval(myVar)
+  }
+  //if there are still elements in the merge sort steps array, display it
+  if (count < m_a.length) { 
+      document.write("[" + m_a[count] + "]&emsp;")
+  }
+  //if there are still elements in the quick sort steps array, display it
+ if (count < q_a.length) { 
+    document.write("[" + q_a[count] + "]&emsp;")
+  }
+  
+  if (count < s_a.length) { 
+    //if count is less than maximum but greater than the amount of values in the quick sort steps array
+    if (count >= q_a.length) {
+      document.write("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;   " )
+    }
+    //if count is less than maximum but greater than the amount of values in the merge sort steps array
+    if (count >= m_a.length){
+    document.write("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;   " )
+  }
+  //display selection sort array
+    document.write("[" + s_a[count] + "]")
+  }
+  count++;
+  document.write("<br></br>")
+}
+
+//draws each step of the sorting race step by step.
+//O(N), will take as long as the length of the sorting algorithm that takes the longest.
+var myVar = setInterval(race_manager, 500);
+
+
+//total time complexity of visualization of three-sort race: O(N)
+
